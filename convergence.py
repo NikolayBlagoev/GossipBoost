@@ -121,7 +121,7 @@ for itr in range(max_iterations):
                 loss = loss / mb_count
                 this_round_loss += loss.item()
                 loss.backward()
-            print("stage",itr,this_round_loss)
+            print(stage,itr,this_round_loss)
         
 
         for s_optim in optimizers:
@@ -134,7 +134,7 @@ for itr in range(max_iterations):
                 mesh_weights = []
                 for idx_dp in range(dp_size):
                     tmp = []
-                    for param in mesh[idx_stage][idx_dp]:
+                    for param in mesh[idx_stage][idx_dp].parameters():
                         tmp.append(param.data.to("cpu").view(-1))
                     mesh_weights.append(torch.cat(tmp))
                 mesh_weights_tmp = torch.cat(mesh_weights)
