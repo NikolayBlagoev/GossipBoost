@@ -52,10 +52,10 @@ for i in range(dp_size):
     s0 = LLamaFirstStage(tokenizer.vocab_size,dmodel=dmodel,num_heads=num_heads,
                         device="cuda:0", n_layers=0, ctx_size=seq_l,padding_idx=tokenizer.pad_id,de_embed=True)
     dp_stage.append(s0)
-    
-    optimizers_stage.append(make_optim(s0.parameters(),init_lr))
     if i > 0:
         dp_stage[-1].load_state_dict(deepcopy(dp_stage[0].state_dict()))
+    optimizers_stage.append(make_optim(s0.parameters(),init_lr))
+    
 mesh.append(dp_stage)
 optimizers.append(optimizers_stage)
 
@@ -69,10 +69,10 @@ for i in range(n_stages):
         random.seed(0)
         dp_stage.append(LLamaStage(dmodel=dmodel,num_heads=num_heads,
                     device=f"cuda:{i+1}", n_layers=n_layers_per_stage, ctx_size=seq_l,padding_idx=tokenizer.pad_id))
-        
-        optimizers_stage.append(make_optim(dp_stage[-1].parameters(),init_lr))
         if k > 0:
             dp_stage[-1].load_state_dict(deepcopy(dp_stage[0].state_dict()))
+        optimizers_stage.append(make_optim(dp_stage[-1].parameters(),init_lr))
+        
     mesh.append(dp_stage)
     optimizers.append(optimizers_stage)
 
@@ -97,7 +97,8 @@ for s in mesh:
         len_sizes.append(len(param.view(-1)))
     vls.append((sizes,len_sizes))
     
-
+print(len(mesh))
+print(len(mesh[0]))
 
 n_stages += 1
 
