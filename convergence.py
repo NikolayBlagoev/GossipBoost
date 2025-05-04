@@ -64,7 +64,7 @@ for i in range(n_stages):
         torch.manual_seed(0)
         random.seed(0)
         dp_stage.append(LLamaStage(dmodel=dmodel,num_heads=num_heads,
-                    device=f"cuda:{i}", n_layers=n_layers_per_stage, ctx_size=seq_l,padding_idx=tokenizer.pad_id))
+                    device=f"cuda:{i+1}", n_layers=n_layers_per_stage, ctx_size=seq_l,padding_idx=tokenizer.pad_id))
         optimizers_stage.append(make_optim(dp_stage[-1].parameters(),init_lr))
     mesh.append(dp_stage)
     optimizers.append(optimizers_stage)
