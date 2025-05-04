@@ -93,6 +93,22 @@ for s in mesh:
 
 
 n_stages += 1
+
+for idx_stage in range(n_stages):
+                mesh_weights = []
+                for idx_dp in range(dp_size):
+                    tmp = []
+                    for param in mesh[idx_stage][idx_dp].parameters():
+                        tmp.append(param.data.to("cpu").view(-1))
+                    mesh_weights.append(torch.cat(tmp))
+                mesh_weights_tmp = torch.cat(mesh_weights)
+                print("PRE",idx_stage,"STD",torch.mean(torch.std(mesh_weights_tmp,dim=0)))
+                mesh_weights_tmp = torch.mean(mesh_weights_tmp,dim=0)
+                max_val = 0
+                for idx in range(dp_size):
+                    max_val = max(max_val, torch.max((mesh_weights[idx] - mesh_weights_tmp).abs(),dim=0))
+                print("PRE",idx_stage,"MAX",max_val)
+
 for itr in range(max_iterations):
     try:
         for s_optim in optimizers:
@@ -142,7 +158,7 @@ for itr in range(max_iterations):
                 mesh_weights_tmp = torch.mean(mesh_weights_tmp,dim=0)
                 max_val = 0
                 for idx in range(dp_size):
-                    max_val = max(max_val, torch.max((mesh_weights[idx] - mesh_weights_tmp).abs(),dim=0).item())
+                    max_val = max(max_val, torch.max((mesh_weights[idx] - mesh_weights_tmp).abs(),dim=0))
                 print(itr,idx_stage,"MAX",max_val)
 
             
