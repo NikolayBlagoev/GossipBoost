@@ -48,7 +48,7 @@ dp_stage = []
 optimizers_stage = []
 for i in range(dp_size):
     torch.manual_seed(0)
-    random.seed(0)
+    # random.seed(0)
     s0 = LLamaFirstStage(tokenizer.vocab_size,dmodel=dmodel,num_heads=num_heads,
                         device="cuda:0", n_layers=0, ctx_size=seq_l,padding_idx=tokenizer.pad_id,de_embed=True)
     dp_stage.append(s0)
@@ -66,7 +66,7 @@ for i in range(n_stages):
     optimizers_stage = []
     for k in range(dp_size):
         torch.manual_seed(0)
-        random.seed(0)
+        # random.seed(0)
         dp_stage.append(LLamaStage(dmodel=dmodel,num_heads=num_heads,
                     device=f"cuda:{i+1}", n_layers=n_layers_per_stage, ctx_size=seq_l,padding_idx=tokenizer.pad_id))
         if k > 0:
@@ -103,19 +103,20 @@ print(len(mesh[0]))
 n_stages += 1
 
 for idx_stage in range(n_stages):
-                mesh_weights = []
-                for idx_dp in range(dp_size):
-                    tmp = []
-                    for param in mesh[idx_stage][idx_dp].parameters():
-                        tmp.append(param.data.to("cpu").view(-1))
-                    mesh_weights.append(torch.cat(tmp))
-                mesh_weights_tmp = torch.cat(mesh_weights)
-                print("PRE",idx_stage,"STD",torch.mean(torch.std(mesh_weights_tmp,dim=0)))
-                mesh_weights_tmp = torch.mean(mesh_weights_tmp,dim=0)
-                max_val = 0
-                for idx in range(dp_size):
-                    max_val = max(max_val, torch.max((mesh_weights[idx] - mesh_weights_tmp).abs(),dim=0)[0])
-                print("PRE",idx_stage,"MAX",max_val)
+    mesh_weights = []
+    for idx_dp in range(dp_size):
+        tmp = []
+        print("params of ",idx_stage,idx_dp)
+        for param in mesh[idx_stage][idx_dp].parameters():
+            tmp.append(param.data.to("cpu").view(-1))
+        mesh_weights.append(torch.cat(tmp))
+    mesh_weights_tmp = torch.cat(mesh_weights)
+    print("PRE",idx_stage,"STD",torch.mean(torch.std(mesh_weights_tmp,dim=0)))
+    mesh_weights_tmp = torch.mean(mesh_weights_tmp,dim=0)
+    max_val = 0
+    for idx in range(dp_size):
+        max_val = max(max_val, torch.max((mesh_weights[idx] - mesh_weights_tmp).abs(),dim=0)[0])
+    print("PRE",idx_stage,"MAX",max_val)
 
 for itr in range(max_iterations):
     try:
