@@ -108,7 +108,7 @@ for idx_stage in range(n_stages):
         tmp = []
         print("params of ",idx_stage,idx_dp)
         for param in mesh[idx_stage][idx_dp].parameters():
-            tmp.append(param.data.to("cpu").view(-1))
+            tmp.append(param.to("cpu").view(-1))
         mesh_weights.append(torch.cat(tmp))
     mesh_weights_tmp = torch.cat(mesh_weights)
     print("PRE",idx_stage,"STD",torch.mean(torch.std(mesh_weights_tmp,dim=0)))
