@@ -69,7 +69,7 @@ for i in range(n_stages):
     mesh.append(dp_stage)
     optimizers.append(optimizers_stage)
 
-ds = OpenWebText(tokenizer,batch_size=batch_size, seq_l=seq_l,skip=start_iter*(world_size*mb_count) + validation_amount*2)
+ds = OpenWebText(tokenizer,batch_size=batch_size, seq_l=seq_l,skip=validation_amount*2)
 validation_dataset = OpenWebText(tokenizer,batch_size=16, seq_l=seq_l)
 
 
