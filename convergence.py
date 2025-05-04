@@ -38,8 +38,7 @@ dp_size = 4
     
 # make the tokenizer
 def make_optim(params,lr):
-    for p in params:
-        p = p*0
+    
     return AdamW(params, lr, betas=(0.9, 0.97), weight_decay=0.0)
 
 tokenizer = SPTokenizer()
@@ -53,6 +52,8 @@ for i in range(dp_size):
     s0 = LLamaFirstStage(tokenizer.vocab_size,dmodel=dmodel,num_heads=num_heads,
                         device="cuda:0", n_layers=0, ctx_size=seq_l,padding_idx=tokenizer.pad_id,de_embed=True)
     dp_stage.append(s0)
+    for p in s0.parameters():
+        p.data = p.data*0
     optimizers_stage.append(make_optim(s0.parameters(),init_lr))
 mesh.append(dp_stage)
 optimizers.append(optimizers_stage)
@@ -67,7 +68,8 @@ for i in range(n_stages):
         random.seed(0)
         dp_stage.append(LLamaStage(dmodel=dmodel,num_heads=num_heads,
                     device=f"cuda:{i+1}", n_layers=n_layers_per_stage, ctx_size=seq_l,padding_idx=tokenizer.pad_id))
-        
+        for p in dp_stage[-1].parameters():
+            p.data = p.data*0
         optimizers_stage.append(make_optim(dp_stage[-1].parameters(),init_lr))
     mesh.append(dp_stage)
     optimizers.append(optimizers_stage)
