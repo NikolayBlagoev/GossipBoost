@@ -111,7 +111,7 @@ for idx_stage in range(n_stages):
                 mesh_weights_tmp = torch.mean(mesh_weights_tmp,dim=0)
                 max_val = 0
                 for idx in range(dp_size):
-                    max_val = max(max_val, torch.max((mesh_weights[idx] - mesh_weights_tmp).abs(),dim=0))
+                    max_val = max(max_val, torch.max((mesh_weights[idx] - mesh_weights_tmp).abs(),dim=0)[0])
                 print("PRE",idx_stage,"MAX",max_val)
 
 for itr in range(max_iterations):
@@ -163,7 +163,7 @@ for itr in range(max_iterations):
                 mesh_weights_tmp = torch.mean(mesh_weights_tmp,dim=0)
                 max_val = 0
                 for idx in range(dp_size):
-                    max_val = max(max_val, torch.max((mesh_weights[idx] - mesh_weights_tmp).abs(),dim=0))
+                    max_val = max(max_val, torch.max((mesh_weights[idx] - mesh_weights_tmp).abs(),dim=0)[0])
                 print(itr,idx_stage,"MAX",max_val)
 
             
