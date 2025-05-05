@@ -47,7 +47,8 @@ optimizers = []
 dp_stage = []
 optimizers_stage = []
 for i in range(dp_size):
-    torch.manual_seed(0)
+    torch.manual_seed(34107)
+    torch.cuda.manual_seed(34107)
     # random.seed(0)
     s0 = LLamaFirstStage(tokenizer.vocab_size,dmodel=dmodel,num_heads=num_heads,
                         device="cuda:0", n_layers=0, ctx_size=seq_l,padding_idx=tokenizer.pad_id,de_embed=True)
@@ -65,7 +66,8 @@ for i in range(n_stages):
     dp_stage = []
     optimizers_stage = []
     for k in range(dp_size):
-        torch.manual_seed(0)
+        torch.manual_seed(34107)
+        torch.cuda.manual_seed(34107)
         # random.seed(0)
         dp_stage.append(LLamaStage(dmodel=dmodel,num_heads=num_heads,
                     device=f"cuda:{i+1}", n_layers=n_layers_per_stage, ctx_size=seq_l,padding_idx=tokenizer.pad_id))
