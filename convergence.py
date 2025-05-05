@@ -144,7 +144,7 @@ for itr in range(max_iterations):
                     else:
                         x = x.to(f"cuda:{i}")
                         if method == "ours" and i == 3:
-                            x = mesh[mbid % dp_size][stage](x)
+                            x = mesh[i][mbid % dp_size](x)
                         else:
                             x = mesh[i][stage](x)
                         
