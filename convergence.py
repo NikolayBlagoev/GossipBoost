@@ -22,7 +22,7 @@ from time import time
 from math import sqrt
 import math
 
-            
+method = argv[1]      
 dmodel = 1024
 num_heads = 16
 n_layers_per_stage = 4
@@ -143,7 +143,11 @@ for itr in range(max_iterations):
                         x = mesh[i][stage].embed(x)
                     else:
                         x = x.to(f"cuda:{i}")
-                        x = mesh[i][stage](x)
+                        if method == "ours" and i == 3:
+                            x = mesh[mbid % dp_size][stage](x)
+                        else:
+                            x = mesh[i][stage](x)
+                        
                 x = x.to(f"cuda:0")
                 x = mesh[0][stage].forward_end(x)
                 loss = causalLLMLoss(x,target,tokenizer.vocab_size)
