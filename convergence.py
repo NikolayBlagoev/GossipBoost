@@ -113,6 +113,8 @@ for idx_stage in range(n_stages):
             tmp.append(param.to("cpu").view(-1))
         mesh_weights.append(torch.cat(tmp))
     mesh_weights_tmp = torch.cat(mesh_weights)
+    print(mesh_weights_tmp.shape)
+    print(mesh_weights_tmp)
     print("PRE",idx_stage,"STD",torch.mean(torch.std(mesh_weights_tmp,dim=0)))
     mesh_weights_tmp = torch.mean(mesh_weights_tmp,dim=0)
     max_val = 0
